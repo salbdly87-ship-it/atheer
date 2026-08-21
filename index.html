@@ -5,28 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تطبيق أثير</title>
     <style>
-        body { font-family: Tahoma, sans-serif; background: linear-gradient(135deg, #74ebd5, #ACB6E5); height: 100vh; margin: 0; display: flex; justify-content: center; align-items: center; }
-        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; max-width: 400px; width: 90%; }
-        h1 { color: #333; margin-bottom: 15px; }
-        p { color: #666; font-size: 18px; line-height: 1.6; white-space: pre-wrap; }
-        .admin-link { display: inline-block; margin-top: 20px; color: #007bff; text-decoration: none; font-size: 14px; }
-        .admin-link:hover { text-decoration: underline; }
+        body { font-family: Tahoma, sans-serif; background: linear-gradient(135deg, #a1c4fd, #c2e9fb); height: 100vh; margin: 0; display: flex; justify-content: center; align-items: center; }
+        .card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; max-width: 450px; width: 90%; }
+        h1 { color: #2c3e50; margin-bottom: 10px; }
+        #welcomeUser { color: #007bff; font-size: 18px; margin-bottom: 20px; font-weight: bold; }
+        p { color: #555; font-size: 20px; margin: 20px 0; background: #f8f9fa; padding: 15px; border-radius: 10px; }
+        .btn { display: inline-block; margin-top: 15px; color: white; background-color: #007bff; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-size: 14px; }
+        .btn:hover { background-color: #0056b3; }
+        .logout-btn { background-color: #dc3545; }
+        .logout-btn:hover { background-color: #bd2130; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h1 id="appTitle">تطبيق أثير</h1>
-    <p id="welcomeMessage">جاري تحميل البيانات...</p>
-    <a href="admin.html" class="admin-link">الانتقال إلى لوحة التحكم</a>
+    <h1>تطبيق أثير</h1>
+    <div id="welcomeUser">مرحباً بك</div>
+    <p id="displayMessage">جاري تحميل الرسالة...</p>
+    
+    <a href="admin.html" class="btn">لوحة التحكم</a>
+    <a href="login.html" class="btn logout-btn" onclick="logout()">تسجيل الخروج</a>
 </div>
 
 <script>
-    const savedMessage = localStorage.getItem('atheerMessage');
-    if (savedMessage) {
-        document.getElementById('welcomeMessage').innerText = savedMessage;
+    // التحقق إذا كان المستخدم مسجل دخول أم لا
+    const loggedUser = localStorage.getItem('atheerUser');
+    if (!loggedUser) {
+        window.location.href = "login.html";
     } else {
-        document.getElementById('welcomeMessage').innerText = "مرحباً بك في تطبيق أثير\nهذه هي واجهة التطبيق الرئيسية، وقريباً سنربطها بلوحة التحكم!";
+        document.getElementById('welcomeUser').innerText = `أهلاً بك، ${loggedUser}`;
+    }
+
+    // جلب الرسالة المحدثة من لوحة التحكم
+    const savedMsg = localStorage.getItem('atheerMessage');
+    if (savedMsg) {
+        document.getElementById('displayMessage').innerText = savedMsg;
+    } else {
+        document.getElementById('displayMessage').innerText = "هذه واجهة أثير الرئيسية!";
+    }
+
+    function logout() {
+        localStorage.removeItem('atheerUser');
     }
 </script>
 
