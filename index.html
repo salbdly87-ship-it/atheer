@@ -2,72 +2,39 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>أثير - التطبيق الموحد</title>
+<title>تسجيل الدخول - أثير</title>
 <style>
-  :root{ --ink:#0d0b14; --panel:#161320; --panel2:#1f1b2c; --accent:#7c3aed; --accent2:#a855f7; --gold:#e0b23c; --ember:#e0724a; }
-  body{ margin:0; background:var(--ink); color:#fff; font-family:"Tajawal",sans-serif; max-width:480px; margin-inline:auto; min-height:100vh; }
-  .view { display: none; }
-  .view.active { display: block; }
-  
-  /* شاشة الدخول المدمجة بتصميم داكن */
-  #view-login { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; padding:20px; }
-  input { width:100%; max-width:300px; padding:15px; margin:10px 0; border-radius:12px; border:1px solid #333; background:var(--panel); color:#fff; }
-  button.main-btn { width:100%; max-width:300px; padding:15px; background:var(--accent); border:none; color:#fff; border-radius:12px; font-weight:bold; cursor:pointer; }
+  :root{ --ink:#0d0b14; --panel:#161320; --accent:#7c3aed; }
+  body{ margin:0; background:var(--ink); color:#fff; font-family:"Tajawal",sans-serif; display:flex; justify-content:center; align-items:center; height:100vh; }
+  .login-card{ background:var(--panel); padding:40px; border-radius:24px; width:90%; max-width:400px; text-align:center; border:1px solid #333; }
+  h1{ margin-bottom:10px; color:var(--accent); }
+  p{ color:rgba(255,255,255,.5); margin-bottom:30px; }
+  input{ width:100%; padding:15px; margin:10px 0; border-radius:12px; border:1px solid #333; background:var(--ink); color:#fff; box-sizing:border-box; }
+  button{ width:100%; padding:15px; margin-top:20px; background:var(--accent); border:none; color:#fff; border-radius:12px; font-weight:bold; cursor:pointer; font-size:16px; }
 </style>
 </head>
 <body>
 
-<!-- شاشة تسجيل الدخول -->
-<div id="view-login" class="view">
-    <div style="text-align:center;">
-        <h2 style="margin-bottom:20px;">تسجيل الدخول إلى أثير</h2>
-        <input type="text" id="username" placeholder="اسم المستخدم">
-        <input type="tel" id="phone" placeholder="رقم الجوال">
-        <button class="main-btn" onclick="login()">دخول</button>
-    </div>
-</div>
-
-<!-- واجهة التطبيق الرئيسية (ستحتوي على تبويباتك) -->
-<div id="view-app" class="view">
-    <div style="padding:20px; text-align:center;">
-        <h1>أهلاً بك يا <span id="user-display"></span></h1>
-        <button onclick="logout()" style="background:var(--ember); border:none; padding:10px 20px; border-radius:8px; color:#fff; cursor:pointer;">تسجيل الخروج</button>
-    </div>
-    <div style="margin-top:20px; text-align:center; color:rgba(255,255,255,.5);">
-        <p>هنا ستعود كامل تبويباتك (اكتشف، LIVE، البروفايل) في الخطوة القادمة.</p>
-    </div>
+<div class="login-card">
+    <h1>أثير</h1>
+    <p>أهلاً بك، سجل دخولك للبدء</p>
+    <input type="text" id="username" placeholder="اسم المستخدم">
+    <input type="tel" id="phone" placeholder="رقم الجوال">
+    <button onclick="login()">دخول إلى التطبيق</button>
 </div>
 
 <script>
-    // التحقق من حالة الدخول
-    window.onload = () => {
-        if(localStorage.getItem('atheerUser')) {
-            showApp();
-        } else {
-            document.getElementById('view-login').classList.add('active');
-        }
-    };
-
     function login() {
         const name = document.getElementById('username').value;
-        if(name) {
+        const phone = document.getElementById('phone').value;
+        if(name && phone) {
             localStorage.setItem('atheerUser', name);
-            showApp();
+            // هنا سيتم توجيه المستخدم لصفحة الواجهة الرئيسية
+            window.location.href = "index.html"; 
+        } else {
+            alert("يرجى إدخال البيانات كاملة");
         }
     }
-
-    function showApp() {
-        document.getElementById('view-login').classList.remove('active');
-        document.getElementById('view-app').classList.add('active');
-        document.getElementById('user-display').innerText = localStorage.getItem('atheerUser');
-    }
-
-    function logout() {
-        localStorage.removeItem('atheerUser');
-        location.reload();
-    }
 </script>
-
 </body>
 </html>
