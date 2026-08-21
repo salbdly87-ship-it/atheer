@@ -42,7 +42,7 @@
             object-fit: cover;
         }
         
-        /* طبقة الخصائص فوق البث */
+        /* طبقة الخصائص فوق البث (مطابقة لجاكو) */
         .stream-overlay {
             position: absolute;
             top: 0;
@@ -52,27 +52,175 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 20px;
-            pointer-events: none; /* لتفادي حجب اللمس عن العناصر الداخلية إذا لزم */
+            padding: 12px;
+            pointer-events: none;
         }
         .stream-overlay * { pointer-events: auto; }
         
-        .stream-header {
+        /* توب بار غرفة البث */
+        .stream-top-bar {
             display: flex;
             justify-content: space-between;
+            align-items: center;
+        }
+        .host-info-card {
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 4px 12px 4px 4px;
+            border-radius: 30px;
+        }
+        .host-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #ffaa00;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .follow-host-btn {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .stream-stats {
+            background: rgba(0,0,0,0.4);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            display: flex;
+            gap: 8px;
             align-items: center;
         }
         .close-stream {
             background: rgba(0,0,0,0.5);
             color: #fff;
             border: none;
-            font-size: 20px;
-            padding: 8px 12px;
+            font-size: 16px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        
-        /* لوحة اختيار نوع البث */
+
+        /* الشات والتعليقات داخل البث */
+        .stream-chat-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 220px;
+            overflow-y: auto;
+            padding-right: 5px;
+            margin-bottom: 10px;
+        }
+        .chat-msg {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(4px);
+            padding: 6px 10px;
+            border-radius: 12px;
+            font-size: 13px;
+            max-width: 80%;
+            line-height: 1.4;
+        }
+        .chat-msg span { font-weight: bold; color: #ffcc00; margin-left: 5px; }
+
+        /* شريط التحكم السفلي في البث */
+        .stream-bottom-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .chat-input-box {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            border-radius: 20px;
+            padding: 8px 14px;
+            display: flex;
+            align-items: center;
+        }
+        .chat-input-box input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #fff;
+            outline: none;
+            font-size: 13px;
+        }
+        .action-icon-btn {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            border: none;
+            color: #fff;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .gift-btn-styled {
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+            border: none;
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* نافذة الهدايا (المكافآت) المنبثقة */
+        .gift-modal {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--panel-face);
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            padding: 16px;
+            display: none;
+            z-index: 1005;
+        }
+        .gift-modal.active { display: block; }
+        .gift-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+            max-height: 180px;
+            overflow-y: auto;
+        }
+        .gift-item {
+            background: var(--panel);
+            border: 1px solid #2a243d;
+            border-radius: 12px;
+            padding: 10px;
+            text-align: center;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        /* نافذة اختيار نوع البث */
         .broadcast-type-modal {
             position: fixed;
             bottom: 0;
@@ -99,24 +247,22 @@
             text-align: center;
             cursor: pointer;
             font-weight: bold;
-            transition: 0.2s;
         }
         .type-btn.selected { border-color: var(--primary); background: rgba(155, 81, 224, 0.15); }
 
-        /* شريط التنقل السفلي */
+        /* شريط التنقل السفلي العام */
         .bottomnav { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--panel); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #2a243d; z-index: 100; }
-        .bottomnav item, .bottomnav a { color: #8e88a3; text-decoration: none; display: flex; flex-direction: column; align-items: center; font-size: 11px; cursor: pointer; }
+        .bottomnav a { color: #8e88a3; text-decoration: none; display: flex; flex-direction: column; align-items: center; font-size: 11px; cursor: pointer; }
         .bottomnav .active-tab { color: #fff; }
         .add-btn { background: var(--primary); color: #fff; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-top: -8px; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(121, 40, 202, 0.4); }
 
-        /* محتوى عام للصفحات */
         .container { padding: 16px; }
         .card { background: var(--panel); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
     </style>
 </head>
 <body>
 
-    <!-- التوب بار -->
+    <!-- التوب بار العام -->
     <div class="topbar">
         <div class="icons">🔍</div>
         <div id="pageTitle">اكتشف</div>
@@ -148,24 +294,64 @@
         </div>
     </div>
 
-    <!-- شاشة البث المباشر بملء الشاشة (Live Fullscreen) -->
+    <!-- شاشة البث المباشر (مطابقة لجاكو) -->
     <div id="liveScreen" class="live-fullscreen-container">
         <video id="videoElement" autoplay playsinline></video>
+        
         <div class="stream-overlay">
-            <div class="stream-header">
-                <button class="close-stream" onclick="closeLive()">✕</button>
-                <div style="background: rgba(0,0,0,0.6); padding: 5px 12px; border-radius: 20px; font-size: 12px;">🔴 مباشر الآن</div>
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 20px;">
-                <div style="background: rgba(0,0,0,0.4); padding: 10px; border-radius: 10px; width: 60%;">
-                    <input type="text" placeholder="اكتب تعليقاً..." style="width: 100%; background: transparent; border: none; color: #fff; outline: none;">
+            <!-- الشريط العلوي للبث -->
+            <div class="stream-top-bar">
+                <div class="host-info-card">
+                    <div class="host-avatar">ي</div>
+                    <div style="font-size: 12px;">
+                        <div style="font-weight: bold;">يوسف العتيبي</div>
+                        <div style="color: #ccc; font-size: 10px;">3576 💎</div>
+                    </div>
+                    <button class="follow-host-btn">+ متابعة</button>
                 </div>
-                <button onclick="toggleCamera()" style="background: var(--primary); color: #fff; border: none; padding: 12px 20px; border-radius: 20px; font-weight: bold; cursor: pointer;">إيقاف الكاميرا</button>
+                
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <div class="stream-stats">🔥 الترتيب 44</div>
+                    <button class="close-stream" onclick="closeLive()">✕</button>
+                </div>
+            </div>
+
+            <!-- منطقة الشات والوسط -->
+            <div>
+                <div class="stream-chat-section" id="chatContainer">
+                    <div class="chat-msg"><span>دلال:</span> الله يسعدك أتمنى انك تلاعبني</div>
+                    <div class="chat-msg"><span>17lum:</span> معوض خير</div>
+                    <div class="chat-msg"><span>ميرا الـ كوهه:</span> حسين بادشاه أعجب بالبث</div>
+                </div>
+
+                <!-- الشريط السفلي للايف (أزرار الهدايا والشات) -->
+                <div class="stream-bottom-actions">
+                    <div class="chat-input-box">
+                        <input type="text" id="chatInput" placeholder="قل أو التحية..." onkeypress="handleChat(event)">
+                    </div>
+                    <button class="gift-btn-styled" onclick="toggleGiftModal()">🎁 هدية</button>
+                    <button class="action-icon-btn" onclick="toggleCamera()">🔄</button>
+                    <button class="action-icon-btn" onclick="sendLike()">❤️</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- نافذة الهدايا -->
+        <div id="giftModal" class="gift-modal">
+            <div style="display: flex; justify-content: space-between; font-weight: bold;">
+                <span>مركز المكافآت والهدايا</span>
+                <span onclick="toggleGiftModal()" style="cursor:pointer;">✕</span>
+            </div>
+            <div class="gift-grid">
+                <div class="gift-item" onclick="sendGift('🌹 وردة')">🌹<br>وردة (1)</div>
+                <div class="gift-item" onclick="sendGift('💎 لؤلؤة')">💎<br>لؤلؤة (199)</div>
+                <div class="gift-item" onclick="sendGift('☕ بيالة شاهي')">☕<br>شاهي (6)</div>
+                <div class="gift-item" onclick="sendGift('🦁 أسد')">🦁<br>أسد (9999)</div>
             </div>
         </div>
     </div>
 
-    <!-- نافذة اختيار نوع البث قبل البدء -->
+    <!-- نافذة اختيار نوع البث -->
     <div id="broadcastModal" class="broadcast-type-modal">
         <div class="modal-title">اختر نوع البث</div>
         <div class="type-options">
@@ -177,7 +363,7 @@
         <div onclick="closeBroadcastModal()" style="text-align: center; margin-top: 12px; color: #8e88a3; cursor: pointer;">إلغاء</div>
     </div>
 
-    <!-- شريط التنقل السفلي -->
+    <!-- شريط التنقل السفلي العام -->
     <div class="bottomnav">
         <a onclick="switchTab('live', this)"><span>LIVE</span></a>
         <a onclick="switchTab('video', this)"><span>فيديو</span></a>
@@ -203,14 +389,8 @@
             if(element) element.classList.add('active-tab');
         }
 
-        function openBroadcastModal() {
-            document.getElementById('broadcastModal').classList.add('active');
-        }
-
-        function closeBroadcastModal() {
-            document.getElementById('broadcastModal').classList.remove('active');
-        }
-
+        function openBroadcastModal() { document.getElementById('broadcastModal').classList.add('active'); }
+        function closeBroadcastModal() { document.getElementById('broadcastModal').classList.remove('active'); }
         function selectType(btn) {
             document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
@@ -218,16 +398,12 @@
 
         async function startActualStream() {
             closeBroadcastModal();
-            const liveScreen = document.getElementById('liveScreen');
-            liveScreen.classList.add('active');
-
+            document.getElementById('liveScreen').classList.add('active');
             try {
                 localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                const videoElement = document.getElementById('videoElement');
-                videoElement.srcObject = localStream;
+                document.getElementById('videoElement').srcObject = localStream;
             } catch (error) {
-                alert("تعذر الوصول إلى الكاميرا أو الميكروفون.");
-                console.error(error);
+                alert("تعذر الوصول إلى الكاميرا.");
                 closeLive();
             }
         }
@@ -237,9 +413,50 @@
                 localStream.getTracks().forEach(track => track.stop());
                 localStream = null;
             }
-            const videoElement = document.getElementById('videoElement');
-            if (videoElement) videoElement.srcObject = null;
+            document.getElementById('videoElement').srcObject = null;
             document.getElementById('liveScreen').classList.remove('active');
+            document.getElementById('giftModal').classList.remove('active');
+        }
+
+        function toggleGiftModal() {
+            const modal = document.getElementById('giftModal');
+            modal.classList.toggle('active');
+        }
+
+        function handleChat(event) {
+            if (event.key === 'Enter') {
+                const input = document.getElementById('chatInput');
+                if (input.value.trim() !== '') {
+                    const chatContainer = document.getElementById('chatContainer');
+                    const msgDiv = document.createElement('div');
+                    msgDiv.className = 'chat-msg';
+                    msgDiv.innerHTML = `<span>أنت:</span> ${input.value}`;
+                    chatContainer.appendChild(msgDiv);
+                    input.value = '';
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }
+            }
+        }
+
+        function sendLike() {
+            const chatContainer = document.getElementById('chatContainer');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'chat-msg';
+            msgDiv.style.color = '#ff4b2b';
+            msgDiv.innerHTML = `❤️ أرسل إعجاباً (تكبيس)`;
+            chatContainer.appendChild(msgDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function sendGift(giftName) {
+            const chatContainer = document.getElementById('chatContainer');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'chat-msg';
+            msgDiv.style.background = 'rgba(255, 75, 43, 0.4)';
+            msgDiv.innerHTML = `🎁 قام بإرسال هدايا: <b>${giftName}</b>`;
+            chatContainer.appendChild(msgDiv);
+            toggleGiftModal();
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
     </script>
 </body>
