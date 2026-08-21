@@ -5,16 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تطبيق أثير</title>
     <style>
-        body { font-family: Tahoma, sans-serif; background-color: #f4f6f9; text-align: center; padding: 50px; }
-        .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); display: inline-block; }
-        h1 { color: #333; }
-        p { color: #666; }
+        body { font-family: Tahoma, sans-serif; background: linear-gradient(135deg, #74ebd5, #ACB6E5); height: 100vh; margin: 0; display: flex; justify-content: center; align-items: center; }
+        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; max-width: 400px; width: 90%; }
+        h1 { color: #333; margin-bottom: 15px; }
+        p { color: #666; font-size: 18px; line-height: 1.6; white-space: pre-wrap; }
+        .admin-link { display: inline-block; margin-top: 20px; color: #007bff; text-decoration: none; font-size: 14px; }
+        .admin-link:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>مرحباً بك في تطبيق أثير</h1>
-        <p>هذه هي واجهة التطبيق الرئيسية، وقريباً سنربطها بلوحة التحكم!</p>
-    </div>
+
+<div class="card">
+    <h1 id="appTitle">تطبيق أثير</h1>
+    <p id="welcomeMessage">جاري تحميل البيانات...</p>
+    <a href="admin.html" class="admin-link">الانتقال إلى لوحة التحكم</a>
+</div>
+
+<script>
+    const savedMessage = localStorage.getItem('atheerMessage');
+    if (savedMessage) {
+        document.getElementById('welcomeMessage').innerText = savedMessage;
+    } else {
+        document.getElementById('welcomeMessage').innerText = "مرحباً بك في تطبيق أثير\nهذه هي واجهة التطبيق الرئيسية، وقريباً سنربطها بلوحة التحكم!";
+    }
+</script>
+
 </body>
 </html>
