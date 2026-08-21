@@ -5,13 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>أثير</title>
 <style>
-  :root{ --ink:#0d0b14; --panel:#161320; --accent:#7c3aed; --ember:#e0724a; }
-  body{ margin:0; background:var(--ink); color:#fff; font-family:"Tajawal",sans-serif; max-width:480px; margin-inline:auto; min-height:100vh; padding-bottom:64px; }
+  :root{ --ink:#0d0b14; --panel:#161320; --panel2:#1f1b2c; --accent:#7c3aed; --ember:#e0724a; }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--ink); color:#fff; font-family:"Tajawal",sans-serif; max-width:480px; margin-inline:auto; min-height:100vh; padding-bottom:70px; }
   .view{display:none; padding:16px;} .view.active{display:block;}
-  .topbar{position:sticky; top:0; background:var(--ink); padding:16px; display:flex; justify-content:space-between;}
-  .card{background:var(--panel); padding:16px; border-radius:20px; margin-bottom:20px;}
-  .bottomnav{position:fixed; bottom:0; width:100%; max-width:480px; background:var(--panel); display:flex; justify-content:space-around; padding:12px 0;}
-  .bottomnav button{background:none; border:none; color:#fff; cursor:pointer;}
+  .topbar{position:sticky; top:0; background:rgba(13,11,20,.95); padding:16px; display:flex; justify-content:space-between; align-items:center; z-index:10;}
+  .card{background:var(--panel); padding:16px; border-radius:20px; margin-bottom:20px; border:1px solid #333;}
+  .rank-row{display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #333;}
+  .bottomnav{position:fixed; bottom:0; width:100%; max-width:480px; background:rgba(13,11,20,.95); display:flex; justify-content:space-around; padding:12px 0; border-top:1px solid #333; z-index:100;}
+  .bottomnav button{background:none; border:none; color:#fff; cursor:pointer; display:flex; flex-direction:column; align-items:center;}
   .bottomnav button.cta{background:var(--accent); padding:10px 20px; border-radius:12px;}
 </style>
 </head>
@@ -19,27 +21,33 @@
 
 <section class="view active" id="view-discover">
     <div class="topbar"><span>💬</span><h1>اكتشف</h1><span>🔍</span></div>
-    <div class="card"><h2>ترتيب الجيوش</h2><div id="army-rankings">...</div></div>
+    <div class="card">
+        <h2>ترتيب الجيوش</h2>
+        <div id="army-rankings">
+            <div class="rank-row"><span>TOP ARMY</span><span>1.7M</span></div>
+            <div class="rank-row"><span>Final tune</span><span>659.8K</span></div>
+        </div>
+    </div>
 </section>
 
 <section class="view" id="view-live">
     <div class="topbar"><h1>البث المباشر</h1></div>
-    <div id="live-grid">جاري تحميل البث...</div>
+    <div style="text-align:center; padding-top:50px;">استكشف البث المباشر هنا...</div>
 </section>
 
 <section class="view" id="view-profile">
     <div class="topbar"><h1>البروفايل</h1></div>
-    <div style="text-align:center;">
-        <div style="font-size:60px;">🙂</div>
-        <p id="user-display">زائر</p>
+    <div style="text-align:center; padding-top:20px;">
+        <div style="font-size:80px;">👤</div>
+        <h2 id="user-display"></h2>
     </div>
 </section>
 
 <nav class="bottomnav">
-    <button onclick="showView('discover')">🧭</button>
-    <button onclick="showView('live')">💬</button>
+    <button onclick="showView('profile')"><span>👤</span>البروفايل</button>
+    <button onclick="showView('discover')"><span>🧭</span>اكتشف</button>
     <button class="cta" onclick="showView('live')">+</button>
-    <button onclick="showView('profile')">👤</button>
+    <button onclick="showView('live')"><span>💬</span>LIVE</button>
 </nav>
 
 <script>
@@ -49,7 +57,7 @@
     // 2. عرض اسم المستخدم
     document.getElementById('user-display').textContent = localStorage.getItem('atheerUser');
 
-    // 3. تبديل الصفحات
+    // 3. التبديل بين الصفحات
     function showView(viewId) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.getElementById('view-' + viewId).classList.add('active');
