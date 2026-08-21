@@ -1,313 +1,68 @@
-doctype html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>اكتشف - أثير</title>
+<title>أثير - التطبيق الحقيقي</title>
 <style>
-  :root{ --ink:#0d0b14; --panel:#161320; --panel2:#1f1b2c; --accent:#7c3aed; --accent2:#a855f7; --gold:#e0b23c; --ember:#e0724a; }
-  *{box-sizing:border-box;}
-  body{ margin:0; background:var(--ink); color:#fff; font-family:"Tajawal","Segoe UI",system-ui,sans-serif; max-width:480px; margin-inline:auto; min-height:100vh; padding-bottom:64px; position:relative; }
-  .topbar{position:sticky; top:0; background:rgba(13,11,20,.95); backdrop-filter:blur(6px); padding:12px 16px 8px; z-index:10;}
-  .topbar .icons{display:flex; justify-content:space-between; align-items:center;}
-  .topbar .icons span{font-size:22px;}
-  .topbar h1{font-size:20px; font-weight:800; margin:0;}
-  .tabs{display:flex; gap:22px; overflow-x:auto; margin-top:10px; padding-bottom:6px;}
-  .tabs button{background:none; border:none; color:rgba(255,255,255,.5); font-weight:600; font-size:15px; padding-bottom:6px; white-space:nowrap; font-family:inherit;}
-  .tabs button.active{color:#fff; font-weight:800; border-bottom:2px solid #fff;}
-  .view{display:none; padding:16px;}
-  .view.active{display:block;}
-  .card{background:var(--panel); border:1px solid rgba(255,255,255,.05); border-radius:20px; padding:16px; margin-bottom:20px;}
-  .card h2{font-size:18px; font-weight:800; margin:0;}
-  .card p.sub{color:rgba(255,255,255,.4); font-size:12px; margin:4px 0 0;}
-  .rank-row{display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(255,255,255,.05); font-size:14px;}
-  .rank-row:last-child{border-bottom:none;}
-  .rank-row .left{width:90px; font-weight:700; color:rgba(255,255,255,.8);}
-  .rank-row .name{flex:1; text-align:right; font-weight:700;}
-  .rank-row .rank{width:26px; text-align:left; font-weight:800; color:rgba(255,255,255,.4);}
-  .rank-row .rank.gold{color:var(--gold);}
-  .card.light{background:#fff; color:var(--ink);}
-  .card.light .rank-row{border-bottom-color:rgba(0,0,0,.06);}
-  .card.light .rank-row .rank{color:rgba(0,0,0,.3);}
-  .card.light .rank-row .rank.gold{color:var(--gold);}
-  .grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
-  .room{background:var(--panel); border:1px solid rgba(255,255,255,.05); border-radius:20px; overflow:hidden; text-align:right; cursor:pointer;}
-  .room .thumb{height:180px; background:linear-gradient(var(--panel2),var(--panel)); display:flex; align-items:center; justify-content:center; font-size:44px; position:relative;}
-  .room .tag{position:absolute; top:8px; right:8px; background:var(--ember); color:#fff; font-size:11px; font-weight:700; padding:4px 8px; border-radius:99px;}
-  .room .info{padding:10px;}
-  .room .host{font-weight:700; font-size:13px;}
-  .room .title{color:rgba(255,255,255,.5); font-size:12px; margin-top:4px;}
-  .room .stats{display:flex; justify-content:space-between; margin-top:8px; color:rgba(255,255,255,.5); font-size:11px;}
-  .profile-avatar{width:96px; height:96px; border-radius:50%; background:var(--panel); display:flex; align-items:center; justify-content:center; font-size:48px; border:1px solid rgba(255,255,255,.1);}
-  .profile-name{font-size:24px; font-weight:800; margin:12px 0 0;}
-  .edit-btn{width:100%; background:rgba(255,255,255,.1); border:none; color:#fff; padding:10px; border-radius:12px; font-weight:700; margin-top:12px; font-family:inherit;}
-  .stat-pair{display:flex; gap:24px; margin-top:16px; font-size:14px;}
-  .stat-pair .num{font-weight:800; text-align:center;}
-  .stat-pair .lbl{color:rgba(255,255,255,.4); text-align:center;}
-  .bottomnav{position:fixed; bottom:0; inset-inline:0; max-width:480px; margin-inline:auto; background:rgba(13,11,20,.95); backdrop-filter:blur(6px); border-top:1px solid rgba(255,255,255,.05); display:grid; grid-template-columns:repeat(5,1fr); align-items:center; padding:6px 0; z-index:100;}
-  .bottomnav button{background:none; border:none; color:#fff; font-family:inherit; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer;}
-  .bottomnav button span.icon{font-size:20px; opacity:.5;}
-  .bottomnav button.active span.icon{opacity:1;}
-  .bottomnav button span.lbl{font-size:11px; color:rgba(255,255,255,.5);}
-  .bottomnav button.active span.lbl{color:#fff; font-weight:800;}
-  .bottomnav button.cta span.icon{width:44px; height:32px; border-radius:8px; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:24px; opacity:1;}
-  .liveroom-overlay{position:fixed; inset:0; max-width:480px; margin-inline:auto; background:var(--panel2); display:none; flex-direction:column; z-index:50;}
-  .liveroom-overlay.active{display:flex;}
-  .liveroom-video{flex:1; background:linear-gradient(var(--panel),var(--ink)); display:flex; align-items:center; justify-content:center; font-size:64px; position:relative;}
-  .liveroom-video .close{position:absolute; top:16px; left:16px; width:36px; height:36px; border-radius:50%; background:rgba(0,0,0,.4); border:none; color:#fff; font-size:16px; cursor:pointer;}
-  .liveroom-chat{height:38%; background:var(--ink); display:flex; flex-direction:column;}
-  .liveroom-chat .msgs{flex:1; overflow-y:auto; padding:8px 12px; font-size:13px;}
-  .liveroom-chat .msgs p{margin:4px 0; color:rgba(255,255,255,.4); text-align:center; font-size:12px;}
-  .liveroom-chat form{display:flex; gap:8px; padding:12px; border-top:1px solid rgba(255,255,255,.05);}
-  .liveroom-chat input{flex:1; background:var(--panel); border:none; border-radius:99px; padding:10px 16px; color:#fff; font-family:inherit; outline:none;}
-  .liveroom-chat button.gift{background:none; border:none; font-size:22px; cursor:pointer;}
+  :root{ --ink:#0d0b14; --panel:#161320; --accent:#7c3aed; }
+  body{ margin:0; background:var(--ink); color:#fff; font-family:sans-serif; max-width:480px; margin-inline:auto; min-height:100vh; }
+  .view { display: none; padding: 20px; }
+  .view.active { display: block; }
+  .profile-avatar{width:96px; height:96px; border-radius:50%; background:var(--panel); display:flex; align-items:center; justify-content:center; font-size:48px; margin: 0 auto;}
+  .profile-name{font-size:24px; font-weight:800; margin:12px 0; text-align:center;}
+  .login-box { text-align: center; margin-top: 50px; }
+  input { padding: 10px; border-radius: 8px; border: none; width: 80%; margin-bottom: 10px; }
+  button { padding: 10px 20px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; }
 </style>
 </head>
 <body>
 
-  <!-- ===== DISCOVER ===== -->
-  <section class="view active" id="view-discover">
-    <div class="topbar">
-      <div class="icons"><span>💬</span><h1>اكتشف</h1><span>🔍</span></div>
+<!-- شاشة تسجيل الدخول -->
+<div id="login-screen" class="view">
+    <div class="login-box">
+        <h2>تسجيل الدخول</h2>
+        <input type="text" id="username-input" placeholder="أدخل اسمك...">
+        <button onclick="login()">دخول</button>
     </div>
-    <div style="padding:16px;">
-      <div class="card">
-        <h2>ترتيب الجيوش</h2>
-        <p class="sub">أقوى الجيوش حسب النقاط الشهرية</p>
-        <div id="army-rankings"></div>
-      </div>
-      <div class="card light">
-        <h2>💎 ترتيب صناع المحتوى اليومي</h2>
-        <div id="creator-rankings"></div>
-      </div>
-      <div class="card">
-        <h2>🪙 ترتيب الداعمين اليومي</h2>
-        <div id="supporter-rankings"></div>
-      </div>
-    </div>
-  </section>
+</div>
 
-  <!-- ===== LIVE GRID ===== -->
-  <section class="view" id="view-live">
-    <div class="topbar">
-      <div class="icons"><span>💬</span><span>🔍</span></div>
-      <div class="tabs" id="live-tabs"></div>
-    </div>
-    <div class="grid" id="live-grid" style="padding:0 6px 16px;"></div>
-  </section>
+<!-- واجهة البروفايل -->
+<div id="view-profile" class="view">
+    <div class="profile-avatar">👤</div>
+    <p id="display-name" class="profile-name">زائر</p>
+    <button onclick="logout()" style="background: #e0724a;">تسجيل الخروج</button>
+</div>
 
-  <!-- ===== VIDEO ===== -->
-  <section class="view" id="view-video">
-    <div style="height:100vh; background:#000; display:flex; align-items:center; justify-content:center;">
-      <p style="color:rgba(255,255,255,.2); font-size:13px;">مشغّل الفيديو (تجريبي)</p>
-    </div>
-  </section>
-
-  <!-- ===== PROFILE ===== -->
-  <section class="view" id="view-profile">
-    <div class="topbar">
-      <div class="icons"><span>💬</span><span>⚙️</span></div>
-    </div>
-    <div style="padding:16px;">
-      <div class="profile-avatar">🙂</div>
-      <p class="profile-name">زائر</p>
-      <button class="edit-btn">✎ تعديل صفحتي</button>
-      <div class="stat-pair">
-        <div><p class="num">--</p><p class="lbl">المتابِعون</p></div>
-        <div><p class="num">--</p><p class="lbl">المتابَعين</p></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== GO LIVE (الكاميرا والبث) ===== -->
-  <section class="view" id="view-golive">
-    <div style="height:100vh; background:linear-gradient(var(--panel),var(--ink)); position:relative; display:flex; flex-direction:column;">
-      <button onclick="switchTab('discover'); stopCamera();" style="position:absolute; top:16px; left:16px; z-index:20; background:rgba(0,0,0,0.5); border:none; color:#fff; width:36px; height:36px; border-radius:50%; font-size:16px; cursor:pointer;">✕</button>
-      <div style="flex:1; position:relative; background:#000; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-        <video id="liveStreamVideo" autoplay playsinline muted style="width:100%; height:100%; object-fit:cover;"></video>
-        <div style="position:absolute; top:16px; right:16px;">
-          <input id="live-title-input" placeholder="أضف عنوانًا لبثك..." style="background:rgba(0,0,0,.5); border:none; border-radius:10px; padding:8px 12px; color:#fff; font-family:inherit; outline:none; font-size:13px;">
-        </div>
-      </div>
-      <div style="padding:16px; background:var(--panel); display:flex; gap:10px;">
-        <button id="start-stream-btn" onclick="toggleCamera()" style="flex:1; background:var(--accent); border:none; border-radius:10px; padding:14px; color:#fff; font-weight:800; font-size:15px; font-family:inherit; cursor:pointer;">تشغيل الكاميرا</button>
-        <button onclick="stopCamera()" style="background:#e0724a; border:none; border-radius:10px; padding:14px 18px; color:#fff; font-weight:800; font-size:15px; font-family:inherit; cursor:pointer;">إيقاف</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== LIVE ROOM OVERLAY ===== -->
-  <div class="liveroom-overlay" id="liveroom">
-    <div class="liveroom-video">
-      <span id="room-avatar">🎥</span>
-      <button class="close" onclick="closeRoom()">✕</button>
-    </div>
-    <div class="liveroom-chat">
-      <div class="msgs" id="room-msgs"></div>
-      <form onsubmit="return sendMsg(event)">
-        <input id="room-input" placeholder="أضف تعليق...">
-        <button type="button" class="gift" onclick="sendGift()">🎁</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- ===== BOTTOM NAV ===== -->
-  <nav class="bottomnav">
-    <button data-tab="profile"><span class="icon">👤</span><span class="lbl">البروفايل</span></button>
-    <button data-tab="discover" class="active"><span class="icon">🧭</span><span class="lbl">اكتشاف</span></button>
-    <button data-tab="golive" class="cta"><span class="icon">+</span></button>
-    <button data-tab="video"><span class="icon">▶️</span><span class="lbl">فيديو</span></button>
-    <button data-tab="live"><span class="icon">💬</span><span class="lbl">LIVE</span></button>
-  </nav>
-
-  <script>
-    const armyRankings = [
-      {rank:1,name:"TOP ARMY",exp:"1.7M",icon:"🥇"},
-      {rank:2,name:"Final tune",exp:"659.8K",icon:"🦁"},
-      {rank:3,name:"M3 - HA",exp:"603.6K",icon:"🦁"},
-      {rank:4,name:"محاربي الساموراي 911",exp:"428.9K",icon:"🛡️"},
-      {rank:5,name:"Elite",exp:"389.9K",icon:"🛡️"},
-      {rank:6,name:"MBS",exp:"383.0K",icon:"🏰"},
-    ];
-    const creatorRankings = [
-      {rank:1,name:"Ghala",value:"2.7M",verified:false},
-      {rank:2,name:"بووووو",value:"2.4M",verified:true},
-      {rank:3,name:"تك تاك",value:"1.6M",verified:true},
-      {rank:4,name:"Dr",value:"1.5M",verified:false},
-      {rank:5,name:"Ehab Aljasser",value:"1.4M",verified:true},
-      {rank:6,name:"MOJ",value:"1.2M",verified:false},
-    ];
-    const supporterRankings = [
-      {rank:1,name:"جاثوم",value:"6.4M",level:59},
-      {rank:2,name:"TOP",value:"4.8M",level:70},
-      {rank:3,name:"أدب",value:"3.2M",level:56},
-      {rank:4,name:"Mishal",value:"2.7M",level:62},
-      {rank:5,name:"S.A.A",value:"1.5M",level:70},
-      {rank:6,name:"لطـام",value:"1.4M",level:70},
-    ];
-    const categories = ["أتابعه","لك","ترفيه","الألعاب","صوتي"];
-    const rooms = [
-      {id:"r1",title:"ي مرحبا #من_سيحسمها؟",category:"لك",host:{name:"حصّة",avatar:"🇦🇪",verified:true},viewers:8528,likes:852800,tag:"Top3 🔥"},
-      {id:"r2",title:"الهلال_الفيحاء #الهلال",category:"لك",host:{name:"Mr.Wajeh",avatar:"🎙️",verified:false},viewers:561,likes:39600,tag:"📈 رائج"},
-      {id:"r3",title:"بث الهلال والفيحاء",category:"لك",host:{name:"حمد حمد",avatar:"🦜",verified:false},viewers:413,likes:413,tag:null},
-      {id:"r4",title:"لا حول ولا قوة إلا بالله",category:"ترفيه",host:{name:"فراوله",avatar:"🍓",verified:true},viewers:1988,likes:1988,tag:null},
-      {id:"r5",title:"للابد JK",category:"ترفيه",host:{name:"HASSAN JK",avatar:"🔱",verified:false},viewers:4479,likes:4479,tag:null},
-    ];
-
-    document.getElementById("army-rankings").innerHTML = armyRankings.map(a => `
-      <div class="rank-row">
-        <span class="left">${a.exp} 🏆</span>
-        <span class="name">${a.name}</span>
-        <span class="rank ${a.rank===1?'gold':''}">${a.rank}</span>
-      </div>`).join("");
-
-    document.getElementById("creator-rankings").innerHTML = creatorRankings.map(c => `
-      <div class="rank-row">
-        <span class="left">${c.value} 💎</span>
-        <span class="name">${c.verified?'✔ ':''}${c.name}</span>
-        <span class="rank ${c.rank===1?'gold':''}">${c.rank}</span>
-      </div>`).join("");
-
-    document.getElementById("supporter-rankings").innerHTML = supporterRankings.map(s => `
-      <div class="rank-row">
-        <span class="left">${s.value} 🪙</span>
-        <span class="name">${s.level} ${s.name}</span>
-        <span class="rank ${s.rank===1?'gold':''}">${s.rank}</span>
-      </div>`).join("");
-
-    let activeCategory = "لك";
-    function renderLiveTabs(){
-      document.getElementById("live-tabs").innerHTML = categories.map(c => `
-        <button class="${c===activeCategory?'active':''}" onclick="setCategory('${c}')">${c}</button>
-      `).join("");
-    }
-    function setCategory(c){
-      activeCategory = c;
-      renderLiveTabs();
-      renderLiveGrid();
-    }
-    function renderLiveGrid(){
-      const list = rooms.filter(r => r.category === activeCategory);
-      document.getElementById("live-grid").innerHTML = list.map(r => `
-        <div class="room" onclick="openRoom('${r.id}')">
-          <div class="thumb">
-            ${r.tag ? `<span class="tag">${r.tag}</span>` : ""}
-            ${r.host.avatar}
-          </div>
-          <div class="info">
-            <div class="host">${r.host.verified?'✔ ':''}${r.host.name}</div>
-            <div class="title">${r.title}</div>
-            <div class="stats"><span>${r.viewers.toLocaleString()}</span><span>♡ ${r.likes.toLocaleString()}</span></div>
-          </div>
-        </div>
-      `).join("") || `<p style="grid-column:1/-1; text-align:center; color:rgba(255,255,255,.4); margin-top:40px;">لا توجد بثوث في هذا القسم</p>`;
-    }
-    renderLiveTabs();
-    renderLiveGrid();
-
-    const views = ["discover","live","video","profile","golive"];
-    function switchTab(tab){
-      views.forEach(v => document.getElementById("view-"+v).classList.toggle("active", v===tab));
-      document.querySelectorAll(".bottomnav button[data-tab]").forEach(b => b.classList.toggle("active", b.dataset.tab===tab));
-      if(tab !== 'golive') { stopCamera(); }
-    }
-    document.querySelectorAll(".bottomnav button[data-tab]").forEach(btn => {
-      btn.addEventListener("click", () => switchTab(btn.dataset.tab));
-    });
-
-    let msgs = [];
-    function openRoom(id){
-      const room = rooms.find(r => r.id === id);
-      document.getElementById("room-avatar").textContent = room.host.avatar;
-      msgs = [{system:true, text:`دخلت غرفة ${room.host.name}`}];
-      renderMsgs();
-      document.getElementById("liveroom").classList.add("active");
-    }
-    function closeRoom(){
-      document.getElementById("liveroom").classList.remove("active");
-    }
-    function renderMsgs(){
-      document.getElementById("room-msgs").innerHTML = msgs.map(m => m.system ? `<p>${m.text}</p>` : `<p style="color:#fff; text-align:right;"><b style="color:var(--accent2)">${m.user}: </b>${m.text}</p>` ).join("");
-    }
-    function sendMsg(e){
-      e.preventDefault();
-      const input = document.getElementById("room-input");
-      if(!input.value.trim()) return false;
-      msgs.push({user:"أنت", text: input.value});
-      input.value = "";
-      renderMsgs();
-      return false;
-    }
-    function sendGift(){
-      msgs.push({system:true, text:"🎁 تم إرسال هدية بنجاح!"});
-      renderMsgs();
-    }
-
-    let mediaStream = null;
-    async function toggleCamera() {
-      const videoEl = document.getElementById("liveStreamVideo");
-      const btn = document.getElementById("start-stream-btn");
-      if (!mediaStream) {
-        try {
-          mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-          videoEl.srcObject = mediaStream;
-          btn.textContent = "إيقاف الكاميرا";
-        } catch (err) {
-          alert("تعذر الوصول إلى الكاميرا أو الميكروفون.");
+<script>
+    // عند فتح التطبيق
+    window.onload = function() {
+        const savedUser = localStorage.getItem("userName");
+        if (savedUser) {
+            showProfile(savedUser);
+        } else {
+            document.getElementById("login-screen").classList.add("active");
         }
-      } else {
-        stopCamera();
-      }
+    };
+
+    function login() {
+        const name = document.getElementById("username-input").value;
+        if (name) {
+            localStorage.setItem("userName", name);
+            showProfile(name);
+        }
     }
 
-    function stopCamera() {
-      if (mediaStream) {
-        mediaStream.getTracks().forEach(track => track.stop());
-        mediaStream = null;
-        document.getElementById("liveStreamVideo").srcObject = null;
-        document.getElementById("start-stream-btn").textContent = "تشغيل الكاميرا";
-      }
+    function showProfile(name) {
+        document.getElementById("login-screen").classList.remove("active");
+        document.getElementById("view-profile").classList.add("active");
+        document.getElementById("display-name").innerText = name;
     }
-  </script>
+
+    function logout() {
+        localStorage.removeItem("userName");
+        location.reload(); // إعادة تحميل الصفحة للعودة لشاشة الدخول
+    }
+</script>
 </body>
 </html>
