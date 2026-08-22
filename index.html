@@ -89,6 +89,43 @@
   .liveroom-chat form { display:flex; gap:8px; padding:12px; border-top:1px solid rgba(255,255,255,.05); }
   .liveroom-chat input { flex:1; background:var(--panel); border:none; border-radius:99px; padding:10px 16px; color:#fff; font-family:inherit; outline:none; }
   .liveroom-chat button.gift { background:none; border:none; font-size:22px; cursor:pointer; }
+
+  /* ---- richer live room ---- */
+  .lr-topbar { position:absolute; top:0; inset-inline:0; display:flex; align-items:flex-start; justify-content:space-between; padding:12px; z-index:5; }
+  .lr-close { background:rgba(0,0,0,.4); border:none; color:#fff; width:32px; height:32px; border-radius:50%; font-size:15px; cursor:pointer; flex-shrink:0; }
+  .lr-viewers { display:flex; align-items:center; gap:6px; background:rgba(0,0,0,.35); border-radius:99px; padding:4px 10px 4px 4px; margin-inline-start:8px; }
+  .lr-viewers span.count { font-size:12px; font-weight:700; }
+  .lr-avatars { display:flex; }
+  .lr-avatars span { width:22px; height:22px; border-radius:50%; background:var(--panel2); border:1.5px solid var(--ink); display:flex; align-items:center; justify-content:center; font-size:11px; margin-inline-start:-8px; }
+  .lr-host { display:flex; align-items:center; gap:6px; margin-inline-start:auto; }
+  .lr-host-info { text-align:right; background:rgba(0,0,0,.35); border-radius:99px; padding:4px 10px; }
+  .lr-host-name { font-size:12px; font-weight:800; display:block; }
+  .lr-hearts { font-size:11px; color:#ff8fa3; }
+  .lr-host-avatar { width:34px; height:34px; border-radius:50%; background:var(--panel2); border:2px solid var(--accent2); display:flex; align-items:center; justify-content:center; font-size:16px; }
+  .lr-follow { width:20px; height:20px; border-radius:50%; background:var(--accent); border:2px solid var(--ink); color:#fff; font-weight:800; font-size:13px; margin-inline-start:-10px; margin-top:18px; cursor:pointer; }
+  .lr-follow.following { background:#4b5563; }
+
+  .lr-rankbar { position:absolute; top:58px; right:12px; display:flex; flex-direction:column; align-items:flex-end; gap:6px; z-index:5; }
+  .lr-rank-pill { background:rgba(0,0,0,.35); color:#ffd27a; font-size:11px; font-weight:700; padding:4px 10px; border-radius:99px; white-space:nowrap; }
+  .lr-chest { background:rgba(0,0,0,.35); border-radius:50%; width:30px; height:30px; display:flex; align-items:center; justify-content:center; font-size:15px; }
+
+  .lr-hearts-fly { position:absolute; bottom:10px; left:12px; width:40px; height:220px; pointer-events:none; z-index:6; }
+  .fly-heart { position:absolute; bottom:0; font-size:20px; animation:fly-up 2.2s ease-out forwards; }
+  @keyframes fly-up { 0%{ transform:translateX(0) translateY(0) scale(.8); opacity:1; } 100%{ transform:translateX(var(--dx,10px)) translateY(-200px) scale(1.2); opacity:0; } }
+
+  .lr-actionbar { display:flex; align-items:center; gap:10px; padding:10px 12px; border-top:1px solid rgba(255,255,255,.05); }
+  .lr-icon-btn { background:none; border:none; color:#fff; font-size:20px; display:flex; flex-direction:column; align-items:center; gap:1px; cursor:pointer; }
+  .lr-icon-btn span { font-size:9px; color:rgba(255,255,255,.5); }
+  .lr-input-form { flex:1; }
+  .lr-input-form input { width:100%; background:var(--panel); border:none; border-radius:99px; padding:9px 14px; color:#fff; font-family:inherit; outline:none; font-size:13px; }
+
+  .gift-panel { display:none; grid-template-columns:repeat(5,1fr); gap:8px; padding:12px; border-top:1px solid rgba(255,255,255,.05); background:var(--ink); }
+  .gift-panel.open { display:grid; }
+  .gift-item { background:var(--panel); border:none; border-radius:12px; padding:8px 4px; display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer; }
+  .gift-item .gi-icon { font-size:24px; }
+  .gift-item .gi-price { font-size:10px; color:rgba(255,255,255,.5); }
+
+  .msg-badge { display:inline-flex; align-items:center; gap:2px; background:var(--accent); color:#fff; font-size:10px; font-weight:800; padding:1px 6px; border-radius:99px; margin-inline-start:4px; }
 </style>
 </head>
 <body>
@@ -198,14 +235,44 @@
   <div class="liveroom-overlay" id="liveroom">
     <div class="liveroom-video">
       <span id="room-avatar">🎥</span>
-      <button class="close" onclick="closeRoom()">✕</button>
+
+      <div class="lr-topbar">
+        <button class="lr-close" onclick="closeRoom()">✕</button>
+        <div class="lr-viewers">
+          <div class="lr-avatars" id="lr-avatars"></div>
+          <span class="count" id="lr-viewer-count">0</span>
+        </div>
+        <div class="lr-host">
+          <button class="lr-follow" id="lr-follow-btn" onclick="toggleFollow()">+</button>
+          <div class="lr-host-avatar" id="lr-host-avatar">🧑</div>
+          <div class="lr-host-info">
+            <span class="lr-host-name" id="lr-host-name">—</span>
+            <span class="lr-hearts">❤️ <span id="lr-heart-count">0</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="lr-rankbar">
+        <span class="lr-rank-pill" id="lr-rank-hour">🔥 توب -- بالساعة</span>
+        <span class="lr-rank-pill" id="lr-rank-num">🏅 الترتيب --</span>
+        <span class="lr-chest" onclick="sendChestGift()">🎁</span>
+      </div>
+
+      <div class="lr-hearts-fly" id="lr-hearts-fly"></div>
     </div>
+
     <div class="liveroom-chat">
       <div class="msgs" id="room-msgs"></div>
-      <form onsubmit="return sendMsg(event)">
-        <input id="room-input" placeholder="أضف تعليق...">
-        <button type="button" class="gift" onclick="sendGift()">🎁</button>
-      </form>
+      <div class="lr-actionbar">
+        <button type="button" class="lr-icon-btn" onclick="alert('قريبًا')">⋯<span>المزيد</span></button>
+        <button type="button" class="lr-icon-btn" onclick="toggleGiftPanel()">🎁<span>هدية</span></button>
+        <button type="button" class="lr-icon-btn" onclick="sendChestGift()">🎉<span>حلاوة</span></button>
+        <form class="lr-input-form" onsubmit="return sendMsg(event)">
+          <input id="room-input" placeholder="ألق التحية!">
+        </form>
+        <button type="button" class="lr-icon-btn" onclick="sendLike()">😊</button>
+      </div>
+      <div class="gift-panel" id="gift-panel"></div>
     </div>
   </div>
 
@@ -328,11 +395,45 @@
       btn.addEventListener("click", () => switchTab(btn.dataset.tab));
     });
 
+    const giftCatalog = [
+      {id:"rose", name:"وردة", price:10, icon:"🌹"},
+      {id:"heart", name:"قلب", price:50, icon:"❤️"},
+      {id:"crown", name:"تاج", price:500, icon:"👑"},
+      {id:"castle", name:"قلعة", price:5000, icon:"🏰"},
+      {id:"rocket", name:"صاروخ", price:20000, icon:"🚀"},
+    ];
+    const mockViewerAvatars = ["🧕","🧔","👩","👨","🐱"];
+
     let msgs = [];
+    let heartCount = 0;
+    let isFollowing = false;
+    let currentRoom = null;
+
     function openRoom(id){
-      const room = rooms.find(r => r.id === id);
-      document.getElementById("room-avatar").textContent = room.host.avatar;
-      msgs = [{system:true, text:`دخلت غرفة ${room.host.name}`}];
+      currentRoom = rooms.find(r => r.id === id);
+      document.getElementById("room-avatar").textContent = currentRoom.host.avatar;
+      document.getElementById("lr-host-avatar").textContent = currentRoom.host.avatar;
+      document.getElementById("lr-host-name").textContent = (currentRoom.host.verified ? "✔ " : "") + currentRoom.host.name;
+      document.getElementById("lr-viewer-count").textContent = currentRoom.viewers.toLocaleString();
+      document.getElementById("lr-avatars").innerHTML = mockViewerAvatars.slice(0,4).map(a => `<span>${a}</span>`).join("");
+      document.getElementById("lr-rank-hour").textContent = `🔥 توب ${Math.max(1, Math.floor(currentRoom.viewers/150))} بالساعة`;
+      document.getElementById("lr-rank-num").textContent = `🏅 الترتيب ${Math.floor(Math.random()*80)+1}`;
+
+      heartCount = currentRoom.likes;
+      document.getElementById("lr-heart-count").textContent = heartCount.toLocaleString();
+      isFollowing = false;
+      const followBtn = document.getElementById("lr-follow-btn");
+      followBtn.textContent = "+";
+      followBtn.classList.remove("following");
+
+      document.getElementById("gift-panel").innerHTML = giftCatalog.map(g => `
+        <button class="gift-item" onclick="sendGift('${g.id}')">
+          <span class="gi-icon">${g.icon}</span>
+          <span class="gi-price">${g.price}</span>
+        </button>`).join("");
+      document.getElementById("gift-panel").classList.remove("open");
+
+      msgs = [{system:true, text:`دخلت غرفة ${currentRoom.host.name}`}];
       renderMsgs();
       document.getElementById("liveroom").classList.add("active");
     }
@@ -340,19 +441,61 @@
       document.getElementById("liveroom").classList.remove("active");
     }
     function renderMsgs(){
-      document.getElementById("room-msgs").innerHTML = msgs.map(m => m.system ? `<p>${m.text}</p>` : `<p style="color:#fff; text-align:right;"><b style="color:var(--accent2)">${m.user}: </b>${m.text}</p>` ).join("");
+      document.getElementById("room-msgs").innerHTML = msgs.map(m => m.system
+        ? `<p>${m.text}</p>`
+        : `<p style="color:#fff; text-align:right;"><span class="msg-badge">${m.level||1}</span><b style="color:var(--accent2)">${m.user}: </b>${m.text}</p>`
+      ).join("");
+      const box = document.getElementById("room-msgs");
+      box.scrollTop = box.scrollHeight;
     }
     function sendMsg(e){
       e.preventDefault();
       const input = document.getElementById("room-input");
       if(!input.value.trim()) return false;
-      msgs.push({user:"أنت", text: input.value});
+      msgs.push({user:"أنت", text: input.value, level:1});
       input.value = "";
       renderMsgs();
       return false;
     }
-    function sendGift(){
-      msgs.push({system:true, text:"🎁 تم إرسال هدية بنجاح!"});
+    function toggleFollow(){
+      isFollowing = !isFollowing;
+      const btn = document.getElementById("lr-follow-btn");
+      btn.textContent = isFollowing ? "✓" : "+";
+      btn.classList.toggle("following", isFollowing);
+      msgs.push({system:true, text: isFollowing ? `بدأت متابعة ${currentRoom.host.name}` : `ألغيت متابعة ${currentRoom.host.name}`});
+      renderMsgs();
+    }
+    function flyHeart(emoji){
+      const layer = document.getElementById("lr-hearts-fly");
+      const el = document.createElement("span");
+      el.className = "fly-heart";
+      el.textContent = emoji || "❤️";
+      el.style.setProperty("--dx", (Math.random()*30-15)+"px");
+      layer.appendChild(el);
+      setTimeout(() => el.remove(), 2200);
+    }
+    function sendLike(){
+      heartCount++;
+      document.getElementById("lr-heart-count").textContent = heartCount.toLocaleString();
+      flyHeart("❤️");
+    }
+    function toggleGiftPanel(){
+      document.getElementById("gift-panel").classList.toggle("open");
+    }
+    function sendGift(giftId){
+      const gift = giftCatalog.find(g => g.id === giftId);
+      msgs.push({system:true, text:`🎁 أنت أرسلت ${gift.icon} ${gift.name}`});
+      heartCount += gift.price;
+      document.getElementById("lr-heart-count").textContent = heartCount.toLocaleString();
+      for(let i=0;i<3;i++) setTimeout(() => flyHeart(gift.icon), i*150);
+      document.getElementById("gift-panel").classList.remove("open");
+      renderMsgs();
+    }
+    function sendChestGift(){
+      msgs.push({system:true, text:"🎉 أنت فتحت صندوق حلاوة!"});
+      heartCount += 20;
+      document.getElementById("lr-heart-count").textContent = heartCount.toLocaleString();
+      flyHeart("🎉");
       renderMsgs();
     }
 
