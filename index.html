@@ -127,6 +127,20 @@
   .gift-item .gi-price { font-size:10px; color:rgba(255,255,255,.5); }
 
   .msg-badge { display:inline-flex; align-items:center; gap:2px; background:var(--accent); color:#fff; font-size:10px; font-weight:800; padding:1px 6px; border-radius:99px; margin-inline-start:4px; }
+
+  /* ---- auth ---- */
+  .auth-overlay { position:fixed; inset:0; max-width:480px; margin-inline:auto; background:rgba(0,0,0,.6); display:none; align-items:flex-end; z-index:200; }
+  .auth-overlay.active { display:flex; }
+  .auth-sheet { background:var(--panel); width:100%; border-radius:24px 24px 0 0; padding:24px 20px 28px; }
+  .auth-tabs { display:flex; gap:20px; margin-bottom:16px; }
+  .auth-tabs button { background:none; border:none; color:rgba(255,255,255,.4); font-family:inherit; font-size:15px; font-weight:700; padding-bottom:6px; }
+  .auth-tabs button.active { color:#fff; border-bottom:2px solid var(--accent2); }
+  .auth-field { width:100%; background:var(--panel2); border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:12px 14px; color:#fff; font-family:inherit; font-size:14px; outline:none; margin-bottom:10px; }
+  .auth-submit { width:100%; background:var(--accent); border:none; border-radius:12px; padding:13px; color:#fff; font-weight:800; font-size:15px; font-family:inherit; cursor:pointer; margin-top:4px; }
+  .auth-error { color:#f36a6a; font-size:12px; margin-bottom:8px; min-height:14px; }
+  .auth-close { display:block; margin:0 auto 14px; width:36px; height:4px; background:rgba(255,255,255,.2); border-radius:99px; border:none; }
+  .profile-login-btn { width:100%; background:var(--accent); border:none; color:#fff; padding:12px; border-radius:12px; font-weight:800; font-family:inherit; margin-top:14px; }
+  .profile-logout-btn { width:100%; background:rgba(255,255,255,.06); border:none; color:#f36a6a; padding:10px; border-radius:12px; font-weight:700; font-family:inherit; margin-top:8px; font-size:13px; }
 </style>
 </head>
 <body>
@@ -175,9 +189,11 @@
       <div class="icons"><span>💬</span><span>⚙️</span></div>
     </div>
     <div style="padding:16px;">
-      <div class="profile-avatar">🙂</div>
-      <p class="profile-name">زائر</p>
-      <button class="edit-btn">✎ تعديل صفحتي</button>
+      <div class="profile-avatar" id="profile-avatar">🙂</div>
+      <p class="profile-name" id="profile-name">زائر</p>
+      <button class="edit-btn" id="edit-profile-btn">✎ تعديل صفحتي</button>
+      <button class="profile-login-btn" id="profile-login-btn" onclick="openAuth()">تسجيل الدخول / إنشاء حساب</button>
+      <button class="profile-logout-btn" id="profile-logout-btn" onclick="doLogout()" style="display:none;">تسجيل الخروج</button>
       <div class="stat-pair">
         <div><p class="num">--</p><p class="lbl">المتابِعون</p></div>
         <div><p class="num">--</p><p class="lbl">المتابَعين</p></div>
@@ -545,6 +561,115 @@
         document.getElementById("start-stream-btn").textContent = "تشغيل الكاميرا";
       }
     }
+  </script>
+
+  <!-- ===== AUTH SHEET ===== -->
+  <div class="auth-overlay" id="auth-overlay">
+    <div class="auth-sheet">
+      <button class="auth-close" onclick="closeAuth()"></button>
+      <div class="auth-tabs">
+        <button class="active" data-atab="login" onclick="setAuthTab('login')">تسجيل الدخول</button>
+        <button data-atab="signup" onclick="setAuthTab('signup')">إنشاء حساب</button>
+      </div>
+      <p class="auth-error" id="auth-error"></p>
+
+      <input class="auth-field" id="auth-name" placeholder="الاسم" style="display:none;">
+      <input class="auth-field" id="auth-email" placeholder="البريد الإلكتروني" type="email">
+      <input class="auth-field" id="auth-password" placeholder="كلمة المرور" type="password">
+      <button class="auth-submit" id="auth-submit-btn" onclick="submitAuth()">دخول</button>
+    </div>
+  </div>
+
+  <!-- Firebase compat build: plain script tags, no bundler needed -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCpFnu2CxAuRJOFm1jNVry0PcV8PZBaqT8",
+      authDomain: "atheerliveweb.firebaseapp.com",
+      projectId: "atheerliveweb",
+      storageBucket: "atheerliveweb.firebasestorage.app",
+      messagingSenderId: "196512291256",
+      appId: "1:196512291256:web:00f1fa4500290bed43974d"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let authTab = "login";
+    function openAuth(){
+      document.getElementById("auth-overlay").classList.add("active");
+    }
+    function closeAuth(){
+      document.getElementById("auth-overlay").classList.remove("active");
+      document.getElementById("auth-error").textContent = "";
+    }
+    function setAuthTab(tab){
+      authTab = tab;
+      document.querySelectorAll(".auth-tabs button").forEach(b => b.classList.toggle("active", b.dataset.atab===tab));
+      document.getElementById("auth-name").style.display = tab === "signup" ? "block" : "none";
+      document.getElementById("auth-submit-btn").textContent = tab === "signup" ? "إنشاء الحساب" : "دخول";
+      document.getElementById("auth-error").textContent = "";
+    }
+    async function submitAuth(){
+      const email = document.getElementById("auth-email").value.trim();
+      const password = document.getElementById("auth-password").value;
+      const name = document.getElementById("auth-name").value.trim();
+      const errEl = document.getElementById("auth-error");
+      errEl.textContent = "";
+      if(!email || !password){ errEl.textContent = "أدخل البريد وكلمة المرور"; return; }
+      try {
+        if(authTab === "signup"){
+          if(!name){ errEl.textContent = "أدخل اسمك"; return; }
+          const cred = await auth.createUserWithEmailAndPassword(email, password);
+          await cred.user.updateProfile({ displayName: name });
+          await db.collection("users").doc(cred.user.uid).set({
+            name: name,
+            email: email,
+            followers: 0,
+            following: 0,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        } else {
+          await auth.signInWithEmailAndPassword(email, password);
+        }
+        closeAuth();
+      } catch(err){
+        const messages = {
+          "auth/email-already-in-use": "هذا البريد مسجل مسبقًا",
+          "auth/invalid-email": "بريد إلكتروني غير صالح",
+          "auth/weak-password": "كلمة المرور ضعيفة (6 أحرف على الأقل)",
+          "auth/user-not-found": "الحساب غير موجود",
+          "auth/wrong-password": "كلمة المرور غير صحيحة",
+          "auth/invalid-credential": "بيانات الدخول غير صحيحة",
+        };
+        errEl.textContent = messages[err.code] || "حدث خطأ، حاول مرة أخرى";
+      }
+    }
+    function doLogout(){
+      auth.signOut();
+    }
+
+    auth.onAuthStateChanged(async (user) => {
+      const nameEl = document.getElementById("profile-name");
+      const loginBtn = document.getElementById("profile-login-btn");
+      const logoutBtn = document.getElementById("profile-logout-btn");
+      if(user){
+        let displayName = user.displayName;
+        try {
+          const doc = await db.collection("users").doc(user.uid).get();
+          if(doc.exists && doc.data().name) displayName = doc.data().name;
+        } catch(e){ /* offline or rules issue — fall back to auth displayName */ }
+        nameEl.textContent = displayName || user.email;
+        loginBtn.style.display = "none";
+        logoutBtn.style.display = "block";
+      } else {
+        nameEl.textContent = "زائر";
+        loginBtn.style.display = "block";
+        logoutBtn.style.display = "none";
+      }
+    });
   </script>
 </body>
 </html>
