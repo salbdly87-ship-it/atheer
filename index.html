@@ -91,13 +91,14 @@
   .liveroom-chat button.gift { background:none; border:none; font-size:22px; cursor:pointer; }
 
   /* ---- richer live room ---- */
-  .lr-topbar { position:absolute; top:0; inset-inline:0; display:flex; align-items:flex-start; justify-content:space-between; padding:12px; z-index:5; }
+  .lr-topbar { position:absolute; top:0; inset-inline:0; display:flex; align-items:flex-start; padding:12px; z-index:5; }
   .lr-close { background:rgba(0,0,0,.4); border:none; color:#fff; width:32px; height:32px; border-radius:50%; font-size:15px; cursor:pointer; flex-shrink:0; }
-  .lr-viewers { display:flex; align-items:center; gap:6px; background:rgba(0,0,0,.35); border-radius:99px; padding:4px 10px 4px 4px; margin-inline-start:8px; }
+  .lr-right-tools { margin-inline-start:auto; display:flex; align-items:center; gap:8px; }
+  .lr-viewers { display:flex; align-items:center; gap:6px; background:rgba(0,0,0,.35); border-radius:99px; padding:4px 10px 4px 4px; }
   .lr-viewers span.count { font-size:12px; font-weight:700; }
   .lr-avatars { display:flex; }
   .lr-avatars span { width:22px; height:22px; border-radius:50%; background:var(--panel2); border:1.5px solid var(--ink); display:flex; align-items:center; justify-content:center; font-size:11px; margin-inline-start:-8px; }
-  .lr-host { display:flex; align-items:center; gap:6px; margin-inline-start:auto; }
+  .lr-host { display:flex; align-items:center; gap:6px; }
   .lr-host-info { text-align:right; background:rgba(0,0,0,.35); border-radius:99px; padding:4px 10px; }
   .lr-host-name { font-size:12px; font-weight:800; display:block; }
   .lr-hearts { font-size:11px; color:#ff8fa3; }
@@ -105,7 +106,7 @@
   .lr-follow { width:20px; height:20px; border-radius:50%; background:var(--accent); border:2px solid var(--ink); color:#fff; font-weight:800; font-size:13px; margin-inline-start:-10px; margin-top:18px; cursor:pointer; }
   .lr-follow.following { background:#4b5563; }
 
-  .lr-rankbar { position:absolute; top:58px; right:12px; display:flex; flex-direction:column; align-items:flex-end; gap:6px; z-index:5; }
+  .lr-rankbar { position:absolute; top:58px; left:12px; display:flex; flex-direction:column; align-items:flex-start; gap:6px; z-index:5; }
   .lr-rank-pill { background:rgba(0,0,0,.35); color:#ffd27a; font-size:11px; font-weight:700; padding:4px 10px; border-radius:99px; white-space:nowrap; }
   .lr-chest { background:rgba(0,0,0,.35); border-radius:50%; width:30px; height:30px; display:flex; align-items:center; justify-content:center; font-size:15px; }
 
@@ -237,11 +238,6 @@
       <span id="room-avatar">🎥</span>
 
       <div class="lr-topbar">
-        <button class="lr-close" onclick="closeRoom()">✕</button>
-        <div class="lr-viewers">
-          <div class="lr-avatars" id="lr-avatars"></div>
-          <span class="count" id="lr-viewer-count">0</span>
-        </div>
         <div class="lr-host">
           <button class="lr-follow" id="lr-follow-btn" onclick="toggleFollow()">+</button>
           <div class="lr-host-avatar" id="lr-host-avatar">🧑</div>
@@ -249,6 +245,13 @@
             <span class="lr-host-name" id="lr-host-name">—</span>
             <span class="lr-hearts">❤️ <span id="lr-heart-count">0</span></span>
           </div>
+        </div>
+        <div class="lr-right-tools">
+          <div class="lr-viewers">
+            <div class="lr-avatars" id="lr-avatars"></div>
+            <span class="count" id="lr-viewer-count">0</span>
+          </div>
+          <button class="lr-close" onclick="closeRoom()">✕</button>
         </div>
       </div>
 
